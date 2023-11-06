@@ -15,6 +15,9 @@ from utilities import randcell2
 
 
 CELL_TYPES = '🟩🌲🌊🚑🛒🔥'
+TREE_BONUS = 100
+#ToDo change to 5000
+UPGRADE_COST = 500
 
 class Map:
    
@@ -23,7 +26,11 @@ class Map:
         self.w = w
         self.h = h
         self.cells = [[0 for i in range(w)] for j in range(h)]
-
+        self.gen_forest(5, 10)
+        self.gen_river(70)
+        self.gen_river(50)
+        self.gen_river(12)
+        self.gen_shop()
 
 
     def check_bounds(self, x, y):
@@ -77,6 +84,11 @@ class Map:
             self.cells[cx][cy] = 1
 
 
+    def gen_shop(self):
+        c = randcell(self.w, self.h)
+        cx, cy = c[0], c[1]
+        self.cells[cx][cy] = 4
+
 
     def add_fire(self):
         c = randcell(self.w, self.h)
@@ -92,15 +104,22 @@ class Map:
                 cell = self.cells[ri][ci]
                 if cell == 5:
                     self.cells[ri][ci] = 0
-        for i in range(5):
+        for i in range(10):
             self.add_fire()
 
 
 
-
-
-
-
+    def process_helico(self, helico):
+        c = self.cells[helico.x][helico.y]
+        if (c == 2):
+            helico.tank = helico.mxtank
+        if (c == 5 and helico.tank >0):
+            helico.tank -= 1
+            helico.score += TREE_BONUS
+            self.cells[helico.x][helico.y] = 1
+        if (c == 4 and helico.score >= UPGRADE_COST):
+            helico.mxtank += 1
+            helico.score -= UPGRADE_COST
 
 
 
