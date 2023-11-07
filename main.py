@@ -7,15 +7,16 @@ from map import Map
 import time
 import os
 from helicopter import Helicopter as Helico
-
+from clouds import Clouds
 
 TICK_SLEEP = .05
 TREE_UPDATE = 50
-FIRE_UPDATE = 100
+CLOUDS_UPDATE = 65
+FIRE_UPDATE = 75
 MAP_W, MAP_H = 20, 10
 
 field = Map(MAP_W, MAP_H)
-
+clouds = Clouds(MAP_H, MAP_W)
 helico = Helico(MAP_W, MAP_H)
 
 
@@ -34,6 +35,7 @@ def process_key(key):
 
 
 
+
 listener = keyboard.Listener(
     on_press = None,
     on_release = process_key,)
@@ -48,13 +50,15 @@ listener.start()
 tick = 1
 while True:
     os.system('cls')
-    print('TICK', tick)
-    field.process_helico(helico)
+    field.process_helico(helico, clouds)
     helico.print_stats()
-    field. print_map(helico)
+    field.print_map(helico, clouds)
     tick += 1
+    print('TICK', tick)
     time.sleep(TICK_SLEEP)
     if (tick % TREE_UPDATE == 0):
         field.gen_tree()
     if (tick % FIRE_UPDATE == 0):
         field.update_fires()
+    if (tick % CLOUDS_UPDATE == 0):
+        clouds.update()
